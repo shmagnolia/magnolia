@@ -1,0 +1,13 @@
+package ${company_domain}.${project_basepkg}.entity.${subPkg}.dto.request;
+
+import ${company_domain}.${project_basepkg}.entity.base.dto.request.BaseRequest;
+import io.swagger.annotations.ApiModel;
+import lombok.Data;
+
+@ApiModel("${tableRemarks}查询请求")
+@Data
+public class ${entity}Request extends BaseRequest {
+
+	private static final long serialVersionUID = 1L;
+
+}

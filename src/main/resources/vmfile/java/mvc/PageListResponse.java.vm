@@ -1,0 +1,28 @@
+package ${company_domain}.${project_basepkg}.entity.${subPkg}.dto.response;
+
+import java.util.List;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import ${company_domain}.${project_basepkg}.entity.base.dto.response.BasePageListResponse;
+import ${company_domain}.${project_basepkg}.entity.base.dto.response.BaseResponse;
+import ${company_domain}.${project_basepkg}.entity.${subPkg}.dto.${entity}DTO;
+import io.swagger.annotations.ApiModel;
+import lombok.Data;
+
+@ApiModel("${tableRemarks}分页查询返回")
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+@Data
+public class ${entity}PageListResponse extends BasePageListResponse {
+
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4659334609340633312L;
+	
+	
+	private List<${entity}DTO> ${entityVar}DTOList;
+
+	
+
+
+}

@@ -1,0 +1,66 @@
+package ${company_domain}.${project_basepkg}.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+#if($generator.project.application.needSSO == "true")
+import ${sso_userPrincipal_class_pkg}.${sso.aasClientSubSystem.class};
+#end
+
+@ConfigurationProperties(prefix = "${project_name_var}")
+@Configuration("${project_name_var}Config")
+public class ${project_name}Config {
+
+	@Value("${${project_name_var}.appID}")
+	private String appID;
+	@Value("${${project_name_var}.environment}")
+	private String environment;
+	
+	public String getAppID() {
+		return appID;
+	}
+	
+	public String getEnvironment() {
+		return environment;
+	}
+	
+#if($generator.project.application.needSSO == "true")	
+	@Value("${${project_name_var}.appHomeUrl}")
+	private String appHomeUrl;
+	@Value("${${project_name_var}.aasServerUrl}")
+	private String aasServerUrl;
+	@Value("${${project_name_var}.accessToken}")
+	private String accessToken;
+	@Value("${${project_name_var}.appSsoUrl}")
+	private String appSsoUrl;
+
+    private ${sso.aasClientSubSystem.class} subSystemInfo;
+	
+	public String getAppHomeUrl() {
+		return appHomeUrl;
+	}
+	public String getAasServerUrl() {
+		return aasServerUrl;
+	}
+	public String getAccessToken() {
+		return accessToken;
+	}
+	public String getAppSsoUrl() {
+		return appSsoUrl;
+	}
+	
+	public synchronized ${sso.aasClientSubSystem.class} getSubSystemInfo() {
+	    if(this.subSystemInfo != null && this.subSystemInfo.getAppId() != null){
+            return subSystemInfo;
+        }
+		this.subSystemInfo = new ${sso.aasClientSubSystem.class}();
+		subSystemInfo.setAppHomeUrl(getAppHomeUrl());
+		subSystemInfo.setAasServerUrl(getAasServerUrl());
+		subSystemInfo.setAccessToken(getAccessToken());
+		subSystemInfo.setAppId(getAppID());
+		subSystemInfo.setAppSsoUrl(getAppSsoUrl());
+		return subSystemInfo;
+	}
+#end
+	
+}

@@ -1,0 +1,57 @@
+package ${company_domain}.${project_basepkg}.entity.base.dto.response;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import ${company_domain}.${project_basepkg}.entity.base.dto.ReturnCode;
+import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import java.io.Serializable;
+
+/**
+ * 通用的消息返回类
+ */
+@Data
+@JsonSerialize(include= JsonSerialize.Inclusion.NON_NULL)
+public class RespCode implements Serializable {
+
+    private static final long serialVersionUID = -1359604952683592253L;
+
+    /**
+     * 响应码
+     */
+    private String code;
+    /**
+     * 响应信息, 如果调用成功, 可以为空
+     */
+    private String message;
+
+    /**
+     * 附加错误码，一般用于返回外部服务原始错误码
+     */
+    private String extraCode = "";
+    /**
+     * 附加错误消息，一般用于返回外部服务原始错误消息
+     */
+    private String extraMessage = "";
+
+    public RespCode(ReturnCode returnCode) {
+        this.code = returnCode.getCode();
+        if (returnCode.getDetailMessage() != null) {
+            this.message = returnCode.getMessage() + ";" + returnCode.getDetailMessage();
+        } else {
+            this.message = returnCode.getMessage();
+        }
+    }
+
+    public RespCode(ReturnCode returnCode, String extraCode, String extraMessage) {
+        this(returnCode);
+        this.extraCode = StringUtils.trimToEmpty(extraCode);
+        this.extraMessage = StringUtils.trimToEmpty(extraMessage);
+    }
+
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+}

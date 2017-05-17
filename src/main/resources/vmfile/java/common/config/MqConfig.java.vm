@@ -1,0 +1,26 @@
+package ${company_domain}.${project_basepkg}.service.common.config;
+
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
+
+@Component("mqConfig")
+@Data
+@ConditionalOnProperty(name = "mq.host")
+public class MqConfig {
+    @Value("${mq.host}")
+    String host;
+    @Value("${mq.port}")
+    int port;
+    @Value("${mq.userName}")
+    String userName;
+    @Value("${mq.password}")
+    String password;
+    @Value("${mq.virtual-host}")
+    String virtualHost;
+    @Value("${mq.timeOut}")
+    int timeOut;
+
+
+}

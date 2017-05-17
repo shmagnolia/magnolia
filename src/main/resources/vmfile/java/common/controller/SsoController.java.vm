@@ -1,0 +1,60 @@
+package ${company_domain}.${project_basepkg}.common.controller;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import ${company_domain}.${project_basepkg}.base.controller.${project_name}BaseController;
+import ${company_domain}.${project_basepkg}.config.${project_name}APIConstants;
+import ${company_domain}.${project_basepkg}.config.${project_name}Config;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import ${sso.ssoAgent.class_pkg}.${sso.ssoAgent.class};
+import ${sso_userPrincipal_class_pkg}.${sso.aasClientSubSystem.class};
+import ${sso.ssoAgentImpl.class_pkg}.${sso.ssoAgentImpl.class};
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+
+
+@RestController
+@Api(value = "登录部分", produces = "application/json")
+@RequestMapping(${project_name}APIConstants.API_MODULE + ${project_name}APIConstants.API_VERSION_V1)
+@Slf4j
+public class SsoController extends ${project_name}BaseController {
+
+    @Autowired
+    private ${project_name}Config ${project_name_var}Config;
+
+    @RequestMapping(value = "/sso/login")
+	@ApiOperation("登录")
+	public void loginl(@ApiParam("model") Model model) throws IOException {
+		SsoAgent ssoAgent = new SsoAgentImpl();
+		ssoAgent.loginAgent(getRequest(), getResponse(), ${project_name_var}Config.getSubSystemInfo());
+	}
+
+	@RequestMapping(value = "/sso/logout")
+	@ApiOperation("登出")
+	public void logout(@ApiParam("model") Model model) {
+		SsoAgent ssoAgent = new SsoAgentImpl();
+		ssoAgent.LogoutAgent(getRequest(), getResponse(), ${project_name_var}Config.getSubSystemInfo());
+	}
+
+	@RequestMapping(value = "/sso/getResources", method = RequestMethod.POST)
+	@ApiOperation("获得菜单和按钮")
+	public void getResouces(@ApiParam("model") Model model) throws UnsupportedEncodingException {
+		SsoAgent ssoAgent = new SsoAgentImpl();
+		ssoAgent.getResourcesAgent(getRequest(), getResponse(), ${project_name_var}Config.getSubSystemInfo());
+
+	}
+
+	@RequestMapping(value = "/sso/getResetPassword", method = RequestMethod.POST)
+	@ApiOperation("重置密码")
+	public void getResetPassword(@ApiParam("model") Model model) throws UnsupportedEncodingException {
+		SsoAgent ssoAgent = new SsoAgentImpl();
+		ssoAgent.getResetPasswordAgent(getRequest(), getResponse(), ${project_name_var}Config.getSubSystemInfo());
+	}
+
+}

@@ -1,0 +1,122 @@
+package ${company_domain}.${project_basepkg}.service.common.config;
+
+import com.github.pagehelper.PageHelper;
+import org.apache.ibatis.plugin.Interceptor;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.TransactionManagementConfigurer;
+import org.springframework.transaction.support.TransactionTemplate;
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+import java.util.Properties;
+
+/**
+ * MyBatis基础配置
+ */
+@Configuration
+@EnableTransactionManagement
+@Slf4j
+public class MyBatisConfig implements TransactionManagementConfigurer {
+
+    private static Logger logger = LoggerFactory.getLogger(MyBatisConfig.class);
+
+    @Resource(name = "${project_name_var}Master")
+    private DataSource dataSource${project_name}Master;
+    @Resource(name = "${project_name_var}Slave")
+    private DataSource dataSource${project_name}Slave;
+
+    /*
+    @Primary
+    @Bean(name = "dataSource${project_name}Master")
+    @ConfigurationProperties(prefix = "datasource.${project_name_var}Master")
+    public DataSource dataSource${project_name}Master() {
+        return DataSourceBuilder.create().build();
+    }
+
+    @Bean(name = "dataSource${project_name}Slave")
+    @ConfigurationProperties(prefix = "datasource.${project_name_var}Slave")
+    public DataSource dataSource${project_name}Slave() {
+        return DataSourceBuilder.create().build();
+    }
+    */
+
+    @Bean(name = "sqlSessionFactory${project_name}Master")
+    public SqlSessionFactory sqlSessionFactory${project_name}Master(@Qualifier("${project_name_var}Master") DataSource dataSource) {
+        return this.sqlSessionFactory(dataSource);
+    }
+
+    @Bean(name = "sqlSessionFactory${project_name}Slave")
+    public SqlSessionFactory sqlSessionFactory${project_name}Slave(@Qualifier("${project_name_var}Slave") DataSource dataSource) {
+        return this.sqlSessionFactory(dataSource);
+    }
+
+    private SqlSessionFactory sqlSessionFactory(DataSource dataSource) {
+        ResourcePatternResolver resolver = null;
+        SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
+        try {
+            bean.setDataSource(dataSource);
+            bean.setTypeAliasesPackage(${typeAliasesPackage});
+            //分页插件
+            PageHelper pageHelper = new PageHelper();
+            Properties properties = new Properties();
+            properties.setProperty("reasonable", "true");
+            properties.setProperty("supportMethodsArguments", "true");
+            properties.setProperty("returnPageInfo", "check");
+            properties.setProperty("params", "count=countSql");
+            pageHelper.setProperties(properties);
+            //添加插件
+            bean.setPlugins(new Interceptor[]{pageHelper});
+            //添加XML目录
+            resolver = new PathMatchingResourcePatternResolver();
+        } catch (Exception e) {
+            log.error("${project_application_name} create sqlSessionFactory异常："+ex.getMessage(), e);
+        }
+        try {
+            bean.setMapperLocations(resolver.getResources("classpath:mapper/*.xml"));
+            return bean.getObject();
+        } catch (Exception e) {
+            log.warn("${project_application_name} set setMapperLocations异常："+e.getMessage(),e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Bean(name = "transactionManager")
+    public DataSourceTransactionManager transactionManager(@Qualifier("${project_name_var}Master") DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
+
+    @Bean(name = "transactionTemplate")
+    public TransactionTemplate transactionTemplate(@Qualifier("transactionManager") DataSourceTransactionManager transactionManager) {
+        return new TransactionTemplate(transactionManager);
+    }
+
+    @Bean(name = "sqlSession${project_name}Master")
+    public SqlSessionTemplate sqlSessionTemplate${project_name}Master(@Qualifier("sqlSessionFactory${project_name}Master") SqlSessionFactory sqlSessionFactory) {
+        return new SqlSessionTemplate(sqlSessionFactory);
+    }
+
+    @Bean(name = "sqlSession${project_name}Slave")
+    public SqlSessionTemplate sqlSessionTemplate${project_name}Slave(@Qualifier("sqlSessionFactory${project_name}Slave") SqlSessionFactory sqlSessionFactory) {
+        return new SqlSessionTemplate(sqlSessionFactory);
+    }
+
+    @Bean
+    @Override
+    public PlatformTransactionManager annotationDrivenTransactionManager() {
+        return txManager();
+    }
+
+    @Bean
+    public PlatformTransactionManager txManager() {
+        return new DataSourceTransactionManager(dataSource${project_name}Master);
+    }
+}

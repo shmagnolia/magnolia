@@ -1,0 +1,75 @@
+package ${company_domain}.${project_basepkg}.entity.base.dto;
+
+import ${company_domain}.${project_basepkg}.entity.enums.BizRespCode;
+import ${company_domain}.${project_basepkg}.entity.enums.GeneralRespCode;
+import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import java.io.Serializable;
+
+
+public class ReturnCode implements Serializable {
+
+    @Getter
+    private final String code;
+    @Getter
+    private final String message;
+    @Getter
+    private String detailMessage;
+
+    public static final ReturnCode SUCCESS = new ReturnCode(GeneralRespCode.SUCCESS);
+    public static final ReturnCode SERVICE_FAILED = new ReturnCode(GeneralRespCode.SERVICE_FAILED);
+    public static final ReturnCode BAD_PARAMETERS = new ReturnCode(GeneralRespCode.BAD_PARAMETERS);
+    public static final ReturnCode MISS_PARAMETERS = new ReturnCode(GeneralRespCode.MISS_PARAMETERS);
+    public static final ReturnCode DATA_DECRYPT_FAILED = new ReturnCode(GeneralRespCode.DATA_DECRYPT_FAILED);
+    public static final ReturnCode FORMAT_PARSE_FAILED = new ReturnCode(GeneralRespCode.FORMAT_PARSE_FAILED);
+    public static final ReturnCode SIGNATURE_VERIFICATION_FAILED = new ReturnCode(GeneralRespCode.SIGNATURE_VERIFICATION_FAILED);
+    public static final ReturnCode DUPLICATED_REQUEST = new ReturnCode(GeneralRespCode.DUPLICATED_REQUEST);
+    public static final ReturnCode TRD_PARTY_SERVICE_FAILED = new ReturnCode(GeneralRespCode.TRD_PARTY_SERVICE_FAILED);
+    public static final ReturnCode API_NOT_FOUND = new ReturnCode(GeneralRespCode.API_NOT_FOUND);
+    public static final ReturnCode REQUEST_UNAUTHORIZED = new ReturnCode(GeneralRespCode.REQUEST_UNAUTHORIZED);
+    public static final ReturnCode DEAL_NOT_FOUND = new ReturnCode(GeneralRespCode.DEAL_NOT_FOUND);
+
+    /**
+     * 这个通过static final 统一处理, 不需要public
+     * @param respCode
+     */
+    private ReturnCode(GeneralRespCode respCode) {
+        this.code = respCode.code;
+        this.message = respCode.desc;
+    }
+
+    public ReturnCode(BizRespCode respCode) {
+        this.code = respCode.code;
+        this.message = respCode.desc;
+    }
+
+    public ReturnCode(String code, String message, String detailMessage) {
+        this(code, message);
+        this.detailMessage = StringUtils.trimToEmpty(detailMessage);
+    }
+
+    public ReturnCode(String code, String message) {
+        this.code = (StringUtils.isEmpty(code) ? SUCCESS.code : code);
+        this.message = StringUtils.trimToEmpty(message);
+    }
+
+    public final ReturnCode appendMessage(String detailMessage) {
+        //returncode都是static变量，必须要new一个新的
+        return new ReturnCode(this.code, this.message, detailMessage);
+    }
+
+    public final boolean isSuccess() {
+        return SUCCESS.code.equals(this.code);
+    }
+
+    public final boolean isFail() {
+        return !isSuccess();
+    }
+
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+}

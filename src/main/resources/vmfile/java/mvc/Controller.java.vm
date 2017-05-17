@@ -1,0 +1,181 @@
+package ${company_domain}.${project_basepkg}.${subPkg}.controller;
+
+import com.github.pagehelper.Page;
+import ${company_domain}.${project_basepkg}.entity.base.dto.GeneRespDTO;
+import ${company_domain}.${project_basepkg}.entity.base.dto.ReturnCode;
+import ${company_domain}.${project_basepkg}.entity.base.dto.response.RespCode;
+import ${company_domain}.${project_basepkg}.entity.common.${project_name}Headers;
+import ${company_domain}.${project_basepkg}.entity.${subPkg}.dto.${entity}DTO;
+import ${company_domain}.${project_basepkg}.entity.${subPkg}.dto.request.${entity}PageListRequest;
+import ${company_domain}.${project_basepkg}.entity.${subPkg}.dto.response.${entity}PageListResponse;
+import ${company_domain}.${project_basepkg}.entity.${subPkg}.dto.response.${entity}Response;
+import ${company_domain}.${project_basepkg}.service.${subPkg}.service.${entity}Service;
+import ${company_domain}.${project_basepkg}.base.controller.${project_name}BaseController;
+import ${company_domain}.${project_basepkg}.config.${project_name}APIConstants;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+
+@RestController
+@Api(value = "${tableRemarks}", produces = "application/json")
+@RequestMapping(${project_name}APIConstants.API_MODULE + ${project_name}APIConstants.API_VERSION_V1)
+@Slf4j
+public class ${entity}Controller extends ${project_name}BaseController {
+
+    @Autowired
+    private ${entity}Service ${entityVar}Service;
+
+    @RequestMapping(value = "/${entityVar}s", method = RequestMethod.GET)
+    @ApiOperation(value = "${tableRemarks}查询", response = ${entity}PageListResponse.class)
+    @ResponseBody
+    public ${entity}PageListResponse get${entity}PageList(@RequestParam(value = "var1", required = false) String var1,
+                                                  @RequestHeader(value = ${project_name}Headers.X_OHM_CLIENT_KEY, required = false) String clientKey,
+                                                  HttpServletResponse httpServletResponse) {
+        ${entity}PageListRequest request = new ${entity}PageListRequest();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("pageNum", pageNum + 1);
+        map.put("pageSize", pageSize);
+        map.put("request", request);
+
+        GeneRespDTO<Map<String, Object>> respDTO = null;
+        ${entity}PageListResponse response = new ${entity}PageListResponse();
+        try {
+            respDTO = ${entityVar}Service.get${entity}DTOPageList(map);
+            Map<String, Object> resultMap = respDTO.getData();
+            response.setTotal(((Page) resultMap.get("page")).getTotal());
+            response.setPageNum(((Page) resultMap.get("page")).getPageNum());
+            response.setPageSize(((Page) resultMap.get("page")).getPageSize());
+            List<${entity}DTO> ${entityVar}DTOList = (List<${entity}DTO>) resultMap.get("txnDTOList");
+            response.set${entity}DTOList(${entityVar}DTOList);
+            response.setRespCode(respDTO.getRespCode());
+        } catch (IllegalStateException|IllegalArgumentException e) {
+            log.error("${tableRemarks}查询失败："+e.getMessage(), e);
+            response.setRespCode(respDTO.getRespCode());
+            httpServletResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            ReturnCode returnCode = ReturnCode.BAD_PARAMETERS.appendMessage(e.getMessage());
+            RespCode respCode = new RespCode(returnCode);
+            respCode.setMessage(e.getMessage());
+            response.setRespCode(respCode);
+        } catch (Exception e) {
+            log.error("${tableRemarks}查询失败："+e.getMessage(), e);
+            ReturnCode returnCode = ReturnCode.SERVICE_FAILED.appendMessage(e.getMessage());
+            RespCode respCode = new RespCode(returnCode);
+            respCode.setMessage(e.getMessage());
+            response.setRespCode(respCode);
+        }
+        return response;
+    }
+
+    @RequestMapping(value = "/${entityVar}/{${primaryKeyJava}}", method = RequestMethod.GET)
+    @ApiOperation(value = "${tableRemarks}明细查询", response = ${entity}Response.class)
+    @ResponseBody
+    public ${entity}Response get${entity}Detail(@PathVariable(value = "${primaryKeyJava}", required = true) String ${primaryKeyJava},
+                                 @RequestHeader(value = ${project_name}Headers.X_OHM_CLIENT_KEY, required = false) String clientKey,
+                                 HttpServletResponse httpServletResponse) {
+        ${entity}Response response = new ${entity}Response();
+        GeneRespDTO<${entity}DTO> respDTO = null;
+        try {
+            respDTO = ${entityVar}Service.get${entity}DTO(${primaryKeyJava});
+            ${entity}DTO dto = respDTO.getData();
+            response.setData(dto);
+            response.setRespCode(respDTO.getRespCode());
+        } catch (IllegalStateException|IllegalArgumentException e) {
+            log.error("${tableRemarks}明细查询失败："+e.getMessage(), e);
+            response.setRespCode(respDTO.getRespCode());
+            httpServletResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            ReturnCode returnCode = ReturnCode.BAD_PARAMETERS.appendMessage(e.getMessage());
+            RespCode respCode = new RespCode(returnCode);
+            respCode.setMessage(e.getMessage());
+            response.setRespCode(respCode);
+        }  catch (Exception e) {
+            log.error("${tableRemarks}明细查询失败："+e.getMessage(), e);
+            ReturnCode returnCode = ReturnCode.SERVICE_FAILED.appendMessage(e.getMessage());
+            RespCode respCode = new RespCode(returnCode);
+            respCode.setMessage(e.getMessage());
+            response.setRespCode(respCode);
+        }
+
+        return response;
+    }
+
+	@RequestMapping(value = "/${entityVar}", method = RequestMethod.POST)
+	@ApiOperation(value = "${tableRemarks}新增", response = ${entity}Response.class)
+	@ResponseBody
+	public ${entity}Response add${entity}(@ApiParam("${entity}Request") @Valid @RequestBody ${entity}Request request,
+													  HttpServletResponse httpServletResponse,
+													  @RequestHeader(value = ${project_name}Headers.X_OHM_CLIENT_KEY, required = false) String clientKey,
+													  BindingResult bindingResult){
+
+		${entity}Response ${entity}Response = new ${entity}Response();
+		if (bindingResult.hasErrors()) {
+			return (${entity}Response) buildBadRequestResponse(httpServletResponse, ${entity}Response);
+		}
+		request.setUserId(getUserInfo().getLogonUserName());
+		GeneRespDTO<BigInteger> respDTO = null;
+		try{
+			respDTO = ${entityVar}Service.modify${entity}(request);
+			${entity}Response.setRespCode(respDTO.getRespCode());
+		} catch (IllegalArgumentException | IllegalStateException e) {
+		    log.error("${tableRemarks}新增失败："+e.getMessage(), e);
+			httpServletResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			ReturnCode returnCode = ReturnCode.BAD_PARAMETERS.appendMessage(e.getMessage());
+			RespCode respCode = new RespCode(returnCode);
+			respCode.setMessage(e.getMessage());
+			${entity}Response.setRespCode(respCode);
+		}  catch (Exception e) {
+			log.error("${tableRemarks}新增失败："+e.getMessage(), e);
+			ReturnCode returnCode = ReturnCode.SERVICE_FAILED.appendMessage(e.getMessage());
+			RespCode respCode = new RespCode(returnCode);
+			respCode.setMessage(e.getMessage());
+			${entity}Response.setRespCode(respCode);
+		}
+		return ${entity}Response;
+	}
+
+    @RequestMapping(value = "/${entityVar}/{${primaryKeyJava}}", method = RequestMethod.PUT)
+    @ApiOperation(value = "${tableRemarks}修改", response = ${entity}Response.class)
+    @ResponseBody
+    public ${entity}Response modify${entity}(@PathVariable(value = "${primaryKeyJava}", required = true) String ${primaryKeyJava},
+                                 @ApiParam("${entity}Request") @Valid @RequestBody ${entity}Request request,
+                                 HttpServletResponse httpServletResponse,
+                                 @RequestHeader(value = ${project_name}Headers.X_OHM_CLIENT_KEY, required = false) String clientKey,
+                                 BindingResult bindingResult) {
+        ${entity}Response response = new ${entity}Response();
+        if (bindingResult.hasErrors()) {
+            return (${entity}Response) buildBadRequestResponse(httpServletResponse, response);
+        }
+        request.set${PrimaryKeyJava}(${primaryKeyJava});
+        request.setUserId(getUserInfo().getLogonUserName()); 
+        GeneRespDTO<BigInteger> respDTO = null;
+        try {
+            respDTO = ${entityVar}Service.modify${entity}(request);
+            response.setRespCode(respDTO.getRespCode());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            log.error("${tableRemarks}修改失败："+e.getMessage(), e);
+            httpServletResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            ReturnCode returnCode = ReturnCode.BAD_PARAMETERS.appendMessage(e.getMessage());
+            RespCode respCode = new RespCode(returnCode);
+            respCode.setMessage(e.getMessage());
+            response.setRespCode(respCode);
+        }  catch (Exception e) {
+            log.error("${tableRemarks}修改失败："+e.getMessage(), e);
+            ReturnCode returnCode = ReturnCode.SERVICE_FAILED.appendMessage(e.getMessage());
+            RespCode respCode = new RespCode(returnCode);
+            respCode.setMessage(e.getMessage());
+            response.setRespCode(respCode);
+        }
+        return response;
+    }
+    
+    
+
+}

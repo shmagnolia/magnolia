@@ -1,0 +1,29 @@
+package ${company_domain}.${project_basepkg}.entity.base.dto.request;
+
+import javax.validation.constraints.NotNull;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+
+@Data
+public class BasePageListRequest {
+
+    /**
+     * 第几页 0开始
+     */
+    @ApiModelProperty("第几页 0开始")
+    @NotNull
+    private int pageNum ;
+
+    /**
+     * 一页返回多少条
+     */
+    @ApiModelProperty("一页返回多少条")
+    @NotNull
+    private int pageSize ;
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+}

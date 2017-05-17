@@ -1,0 +1,163 @@
+package ${company_domain}.${project_basepkg}.base.handler;
+
+import ${company_domain}.${project_basepkg}.entity.base.dto.ReturnCode;
+import ${company_domain}.${project_basepkg}.entity.base.dto.response.BaseResponse;
+import ${company_domain}.${project_basepkg}.entity.base.dto.response.RespCode;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.UnexpectedTypeException;
+
+@ControllerAdvice
+@Slf4j
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public BaseResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        BaseResponse response = new BaseResponse();
+        ReturnCode returnCode = ReturnCode.FORMAT_PARSE_FAILED.appendMessage(e.getMessage());
+        response.setRespCode(new RespCode(returnCode));
+        return response;
+    }
+
+    /**
+     * content-type无法识别
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(value = HttpMediaTypeNotSupportedException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public BaseResponse handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
+        BaseResponse response = new BaseResponse();
+        ReturnCode returnCode = ReturnCode.FORMAT_PARSE_FAILED.appendMessage(e.getMessage());
+        response.setRespCode(new RespCode(returnCode));
+        return response;
+    }
+
+
+    /**
+     * path param中如valid报错则
+     */
+    @ExceptionHandler(value = ConstraintViolationException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public BaseResponse httpConstraintViolationException(ConstraintViolationException e) {
+        BaseResponse response = new BaseResponse();
+        StringBuffer errorMsgs = new StringBuffer();
+        if (CollectionUtils.isNotEmpty(e.getConstraintViolations())) {
+            for (ConstraintViolation violation : e.getConstraintViolations()) {
+                errorMsgs.append(violation.getMessage()).append(';');
+            }
+        }
+        ReturnCode returnCode = ReturnCode.BAD_PARAMETERS.appendMessage(errorMsgs.toString());
+        response.setRespCode(new RespCode(returnCode));
+        return response;
+    }
+
+    /**
+     * RequestBody valid报错
+     */
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public BaseResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        BaseResponse response = new BaseResponse();
+        BindingResult bindingResult = e.getBindingResult();
+
+        String errorMsg = "";
+        if (bindingResult != null && CollectionUtils.isNotEmpty(bindingResult.getAllErrors())) {
+            StringBuffer errorMsgs = new StringBuffer();
+            for (ObjectError error : bindingResult.getAllErrors()) {
+                if (error instanceof FieldError) {
+                    FieldError fieldError = (FieldError) error;
+                    errorMsgs.append(fieldError.getField()).append(':').append(fieldError.getDefaultMessage()).append(';');
+                } else {
+                    errorMsgs.append(error.getDefaultMessage()).append(';');
+                }
+            }
+            errorMsg = errorMsgs.toString();
+        }
+        ReturnCode returnCode = ReturnCode.BAD_PARAMETERS.appendMessage(errorMsg);
+        response.setRespCode(new RespCode(returnCode));
+        return response;
+    }
+
+
+    /**
+     * 缺少必填的RequestParam
+     */
+    @ExceptionHandler(value = MissingServletRequestParameterException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public BaseResponse handleMethodArgumentNotValidException(MissingServletRequestParameterException e) {
+        BaseResponse response = new BaseResponse();
+        ReturnCode returnCode = ReturnCode.BAD_PARAMETERS.appendMessage(e.getParameterName() +": 不能为null");
+        response.setRespCode(new RespCode(returnCode));
+        return response;
+    }
+
+    @ExceptionHandler(value = AppUnauthorizedException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public BaseResponse handleAppUnauthorizedException(AppUnauthorizedException e) {
+        BaseResponse response = new BaseResponse();
+        ReturnCode returnCode = ReturnCode.REQUEST_UNAUTHORIZED.appendMessage(e.getMessage());
+        response.setRespCode(new RespCode(returnCode));
+        return response;
+    }
+
+    @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public BaseResponse handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        BaseResponse response = new BaseResponse();
+        ReturnCode returnCode = ReturnCode.API_NOT_FOUND.appendMessage(e.getMessage());
+        response.setRespCode(new RespCode(returnCode));
+        return response;
+    }
+
+    @ExceptionHandler(value = Exception.class)
+    @ResponseBody
+    public BaseResponse defaultHandler(HttpServletRequest req, HttpServletResponse resp, Exception e) throws Exception {
+        BaseResponse response = new BaseResponse();
+        ReturnCode returnCode = ReturnCode.SERVICE_FAILED.appendMessage(e.getMessage());
+        if (e instanceof ServletRequestBindingException) {
+            returnCode = ReturnCode.MISS_PARAMETERS.appendMessage(e.getMessage());
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+        } else if (e instanceof UnexpectedTypeException) {
+            returnCode = ReturnCode.BAD_PARAMETERS.appendMessage(e.getMessage());
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+        } else if (e instanceof BindException) {
+            returnCode = ReturnCode.BAD_PARAMETERS.appendMessage(e.getMessage());
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+        } else {  //交易出现系统底层异常时，应抛出异常，外层统一处理为500
+            resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            log.error(returnCode.toString(), e);
+        }
+
+        response.setRespCode(new RespCode(returnCode));
+        return response;
+    }
+
+}

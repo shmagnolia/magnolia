@@ -1,0 +1,32 @@
+package ${company_domain}.${project_basepkg}.entity.base.dto.response;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.Data;
+
+
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+@Data
+public class BasePageListResponse extends BaseResponse {
+
+    /**
+     * 第几页 0开始
+     */
+    private int pageNum;
+
+    /**
+     * 一页返回多少条
+     */
+    private int pageSize;
+
+    /**
+     * 总共多少页
+     */
+    private int pages;
+
+    /**
+     * 总数
+     */
+    private long total;
+
+
+}

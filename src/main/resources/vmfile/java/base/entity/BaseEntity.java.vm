@@ -1,0 +1,29 @@
+package ${company_domain}.${project_basepkg}.entity.base.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+public class BaseEntity implements Serializable {
+
+    @ApiModelProperty("创建人")
+	private String creator;
+
+    @ApiModelProperty("最后修改人")
+	private String modifier;
+
+    @ApiModelProperty("创建时间")
+	private Date createTime;
+
+    @ApiModelProperty("最后修改时间")
+	private Date lastModifiedTime;
+
+    @ApiModelProperty("数据库最后修改时间")
+    private Date lastModifiedDbTime;
+
+}

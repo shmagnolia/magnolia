@@ -1,0 +1,53 @@
+package ${company_domain}.${project_basepkg}.entity.base.dto;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import java.io.Serializable;
+
+
+@Data
+@NoArgsConstructor
+public class VersionDTO implements Serializable {
+
+    private static final long serialVersionUID = -5021025118017405727L;
+
+    @Value("${git.branch}")
+    private String gitBranch;
+    @Value("${git.dirty}")
+    private String gitDirty;
+    @Value("${git.tags}")
+    private String gitTags;
+    @Value("${git.commit.id.describe}")
+    private String gitCommitIdDescribe;
+    @Value("${git.build.user.name}")
+    private String gitBuildUserName;
+    @Value("${git.build.user.email}")
+    private String gitBuildUserEmail;
+    @Value("${git.build.time}")
+    private String gitBuildTime;
+    @Value("${git.commit.id}")
+    private String gitCommitId;
+    @Value("${git.commit.id.abbrev}")
+    private String gitCommitIdAbbrev;
+    @Value("${git.commit.user.name}")
+    private String gitCommitUserName;
+    @Value("${git.commit.user.email}")
+    private String gitCommitUserEmail;
+    @Value("${git.commit.message.full}")
+    private String gitCommitMessageFull;
+    @Value("${git.commit.message.short}")
+    private String gitCommitMessageShort;
+    @Value("${git.commit.time}")
+    private String gitCommitTime;
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+}

@@ -1,0 +1,20 @@
+package ${company_domain}.${project_basepkg}.entity.${subPkg}.dto.request;
+
+import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import ${company_domain}.${project_basepkg}.entity.base.dto.request.BasePageListRequest;
+import lombok.Data;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("${tableRemarks}分页查询请求")
+@Data
+public class ${entity}PageListRequest extends BasePageListRequest implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5046461066084831135L;
+
+
+}

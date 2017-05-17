@@ -1,0 +1,42 @@
+package ${company_domain}.${project_basepkg}.interceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import ${company_domain}.${project_basepkg}.util.common.${project_name}Config;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+import ${sso_aasClient_class_pkg}.${sso_aasClient_class};
+import ${sso_aasClientFactory_class_pkg}.${sso_aasClientFactory_class};
+import ${sso_userPrincipal_class_pkg}.${sso_userPrincipal_class};
+
+
+@Slf4j
+public class SsoSecurityInterceptor implements HandlerInterceptor {
+
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)throws Exception {
+        ApplicationContext applicationContext = (ApplicationContext) WebApplicationContextUtils.getWebApplicationContext(request.getServletContext());
+        ${project_name}Config ${project_name_var}Config = (${project_name}Config) applicationContext.getBean("${project_name_var}Config");
+        ${sso_aasClientFactory_class} clientFactory = ${sso_aasClientFactory_class}.getInstance();
+        ${sso_aasClient_class} client = clientFactory.getClient();
+        ${sso_userPrincipal_class} ssoUserInfo = new ${sso_userPrincipal_class}();
+        ssoUserInfo.setAasClientSubSystem(${project_name_var}Config.getSubSystemInfo());
+        return client.doFilter(ssoUserInfo, request, response);
+    }
+
+	@Override
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+	}
+
+	@Override
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
+	}
+
+}

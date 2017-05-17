@@ -1,0 +1,55 @@
+package ${company_domain}.${project_basepkg}.entity.common;
+
+
+public interface ${project_name}Headers {
+
+    /**
+     * 请求API的Stage，如TEST、RELEASE，API提供者可以选择发布到哪个Stage，
+     * 只有发布到指定Stage后API才可以调用，否则会提示API找不到/Invalid * Url/签名失败等错误
+     * eg:
+     * X-OHM-Stage: RELEASE
+     */
+    String X_OHM_STATGE = "X-OHM-Stage";
+
+    /**
+     * 请求的AppKey，由支付平台分配，只有获得API授权后才可以调用，数字型
+     * eg:
+     * X-OHM-ClientKey:60022326
+     */
+    String X_OHM_CLIENT_KEY = "X-OHM-ClientKey";
+
+    /**
+     * 请求时间,ISO8601
+     * eg:
+     * X-OHM-Time:2016-04-06T12:00:00Z
+     */
+    String X_OHM_TIME = "X-OHM-Time";
+
+    /**
+     * 请求唯一标识，UUID，建议15分钟内Request-Id不能重复，与时间戳结合使用起到防重放作用
+     * eg:
+     * X-OHM-Request-Id:7AD052CB-EE8B-4DFD-BBAF-EFB340E0A5AF
+     */
+    String X_OHM_REQUEST_ID = "X-OHM-RequestId";
+
+    /**
+     * 用户或操作员Id
+     * eg:
+     * X-OHM-UserId:10000000123
+     */
+    String X_OHM_USER_ID = "X-OHM-UserId";
+
+    /**
+     * 用户Token, 本阶段传入非空任意值即可，不进行验证
+     * eg:
+     * X-OHM-UserToken:xxxxxxxxxxxxxxxxxxxxx
+     */
+    String X_OHM_USER_TOKEN = "X-OHM-UserToken";
+
+    /**
+     * 请求签名，用于验签，防止伪造请求
+     * eg: X-OHM-Signature:xxxxxxxxxxxxxxxxxxxxx
+     */
+    String X_OHM_SIGNATURE = "X-OHM-Signature";
+
+}

@@ -1,0 +1,23 @@
+package ${company_domain}.${project_basepkg}.entity.${subPkg}.entity;
+
+import java.util.Date;
+import ${company_domain}.${project_basepkg}.entity.base.entity.BaseEntity;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import java.lang.Long;
+import java.lang.Short;
+import java.lang.Integer;
+import java.math.BigInteger;
+import java.lang.Double;
+import java.lang.Byte;
+import java.math.BigDecimal;
+
+
+@ApiModel("${tableRemarks}")
+@Data
+public class ${entity} extends BaseEntity {
+
+    ${entityBody}
+
+}

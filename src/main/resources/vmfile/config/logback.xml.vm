@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
+    <property name="LOG_PATH" value="-tmp"/>
+    <property name="LOG_HOME" value="${LOG_PATH}"/>
+
+    <!--定义日志文件大小 超过这个大小会压缩归档 -->
+    <property name="INFO_MAX_FILE_SIZE" value="100MB"/>
+    <property name="ERROR_MAX_FILE_SIZE" value="100MB"/>
+    <property name="TRACE_MAX_FILE_SIZE" value="100MB"/>
+    <property name="WARN_MAX_FILE_SIZE" value="100MB"/>
+
+    <!--定义日志文件最长保存时间 -->
+    <property name="INFO_MAX_HISTORY" value="365"/>
+    <property name="ERROR_MAX_HISTORY" value="365"/>
+    <property name="TRACE_MAX_HISTORY" value="365"/>
+    <property name="WARN_MAX_HISTORY" value="365"/>
+
+    <!--定义归档日志文件最大保存大小，当所有归档日志大小超出定义时，会触发删除  -->
+    <property name="INFO_TOTAL_SIZE_CAP" value="100GB"/>
+    <property name="ERROR_TOTAL_SIZE_CAP" value="100GB"/>
+    <property name="TRACE_TOTAL_SIZE_CAP" value="50GB"/>
+    <property name="WARN_TOTAL_SIZE_CAP" value="50GB"/>
+    <property name="ZOOKEEPER" value="10.214.168.99:2181"/>
+    <property name="BROKER" value="10.214.168.99:9092"/>
+    <property name="${project_name}_LOG_LEVEL" value="INFO"/>
+
+    <!-- 控制台输出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 日志输出编码 -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} [%L] - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~INFO BEGIN~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- 按照每天生成日志文件 -->
+    <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 当前Log文件名 -->
+        <file>${LOG_HOME}/info_${project_name_var}.log</file>
+        <!-- 压缩备份设置 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/backup/info_logs/info_${project_name_var}.%d{yyyy-MM-dd}.%i.log.gz
+            </fileNamePattern>
+            <maxHistory>${INFO_MAX_HISTORY}</maxHistory>
+            <MaxFileSize>${INFO_MAX_FILE_SIZE}</MaxFileSize>
+            <totalSizeCap>${INFO_TOTAL_SIZE_CAP}</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} [%L] - %msg%n
+            </pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~INFO END~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~ERROR BEGIN~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- 按照每天生成日志文件 -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 当前Log文件名 -->
+        <file>${LOG_HOME}/error_${project_name_var}.log</file>
+        <!-- 压缩备份设置 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/backup/error_logs/error_${project_name_var}.%d{yyyy-MM-dd}.%i.log.gz
+            </fileNamePattern>
+            <!-- 非当天的Log文件压缩备份为 archive/ldap-pwd.2014-08-10.zip -->
+            <maxHistory>${ERROR_MAX_HISTORY}</maxHistory>
+            <MaxFileSize>${ERROR_MAX_FILE_SIZE}</MaxFileSize>
+            <totalSizeCap>${ERROR_TOTAL_SIZE_CAP}</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} [%L] - %msg%n
+            </pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~ERROR END~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~TRACE BEGIN~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- 按照每天生成日志文件 -->
+    <appender name="TRACE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 当前Log文件名 -->
+        <file>${LOG_HOME}/trace_${project_name_var}.log</file>
+        <!-- 压缩备份设置 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 非当天的Log文件压缩备份-->
+            <fileNamePattern>${LOG_HOME}/backup/trace_logs/trace_${project_name_var}.%d{yyyy-MM-dd}.%i.log.gz
+            </fileNamePattern>
+            <maxHistory>${TRACE_MAX_HISTORY}</maxHistory>
+            <MaxFileSize>${TRACE_MAX_FILE_SIZE}</MaxFileSize>
+            <totalSizeCap>${TRACE_TOTAL_SIZE_CAP}</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} [%L] - %msg%n
+            </pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>TRACE</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~TRACE END~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~WARN BEGIN~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- 按照每天生成日志文件 -->
+    <appender name="WARN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 当前Log文件名 -->
+        <file>${LOG_HOME}/warn_${project_name_var}.log</file>
+        <!-- 压缩备份设置 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 非当天的Log文件压缩备份为 archive/ldap-pwd.2014-08-10.zip -->
+            <fileNamePattern>${LOG_HOME}/backup/warn_logs/warn_${project_name_var}.%d{yyyy-MM-dd}.%i.log.gz
+            </fileNamePattern>
+            <maxHistory>${WARN_MAX_HISTORY}</maxHistory>
+            <MaxFileSize>${WARN_MAX_FILE_SIZE}</MaxFileSize>
+            <totalSizeCap>${WARN_TOTAL_SIZE_CAP}</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} [%L] - %msg%n
+            </pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~WARN BEGIN~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!--~~~~~~~~~~~~~~~~~~  KAFKA APPENDER BEGIN  ~~~~~~~~~~~-->
+    <appender name="kafka-log" class="${kafka-log_appender}">
+        <topic>${project_name_var}-log</topic>
+        <zookeeperHost>${ZOOKEEPER}</zookeeperHost>
+        <broker>${BROKER}</broker>
+    </appender>
+
+    <appender name="kafka-log-error" class="${kafka-log-error_appender}">
+        <topic>${project_name_var}-log-error</topic>
+        <zookeeperHost>${ZOOKEEPER}</zookeeperHost>
+        <broker>${BROKER}</broker>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+    <!-- ~~~~~~~~~~~~~~~~~~  KAFKA APPENDER end  ~~~~~~~~~~~ -->
+
+
+    <!-- 日志输出级别 -->
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="TRACE_FILE"/>
+        <appender-ref ref="INFO_FILE"/>
+        <appender-ref ref="WARN_FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+        <appender-ref ref="kafka-log-error"/>
+    </root>
+
+    <logger name="com.ibatis">
+        <level value="${${project_name_var}_LOG_LEVEL}"/>
+    </logger>
+    <logger name="com.wanda">
+        <level value="${${project_name_var}_LOG_LEVEL}"/>
+        <appender-ref ref="kafka-log"/>
+    </logger>
+
+</configuration>

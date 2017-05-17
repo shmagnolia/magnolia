@@ -1,0 +1,10 @@
+package ${company_domain}.${project_basepkg}.config;
+
+
+public class ${project_name}APIConstants {
+
+    public static final String API_MODULE = "${project.api.module}";
+
+    public static final String API_VERSION_V1 = "${project.api.version}";
+
+}

@@ -1,0 +1,7 @@
+package ${company_domain}.${project_basepkg}.entity.base.dto;
+
+
+public interface BaseDTO{
+
+
+}

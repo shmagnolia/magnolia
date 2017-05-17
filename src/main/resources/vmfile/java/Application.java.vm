@@ -1,0 +1,24 @@
+package ${company_domain}.${project_basepkg};
+
+import ${application.mainclass_pkg}.${application.mainClass};
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.servlet.ServletComponentScan;
+
+@ServletComponentScan
+@Slf4j
+public class ${project_name}Application extends ${application.mainClass} {
+
+    public static void main(String[] args) {
+        try {
+            log.info("${project_application_name} 开始启动");
+            System.setProperty("server.port", "${application.server.port}");
+            System.setProperty("spring.application.name", "${project_application_name}");
+            System.setProperty("logging.level.org.springframework.web", "debug");
+            ${application.mainClass}.main(args);
+            log.info("${project_application_name} 已经启动");
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+        }
+
+    }
+}

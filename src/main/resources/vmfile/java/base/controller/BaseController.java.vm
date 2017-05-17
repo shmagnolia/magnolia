@@ -1,0 +1,94 @@
+package ${company_domain}.${project_basepkg}.base.controller;
+
+import ${sso_userPrincipal_class_pkg}.${sso_userPrincipal_class};
+import ${company_domain}.${project_basepkg}.entity.base.dto.ReturnCode;
+import ${company_domain}.${project_basepkg}.entity.base.dto.response.BaseResponse;
+import ${company_domain}.${project_basepkg}.entity.base.dto.response.RespCode;
+import ${company_domain}.${project_basepkg}.entity.common.dto.UserInfo;
+import ${company_domain}.${project_basepkg}.util.common.${project_name}Config;
+#if($null.isNull($sso_baseController_package))
+import ${sso_baseController_package}.${sso_baseController_class};
+#end
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+
+public class ${project_name}BaseController #if($null.isNull($sso_baseController_package))extends ${sso_baseController_class} #end {
+
+    @Autowired
+    private ${project_name}Config ${project_name_var}Config;
+
+    /**
+     * 获取登录用户基本信息
+     * @return
+     */
+	protected UserInfo getUserInfo() {
+//        ${sso_userPrincipal_class} ssoUserInfo = (${sso_userPrincipal_class}) getUserPrincipal();
+        UserInfo userInfo;
+
+//		if ("local".equals(${project_name_var}Config.getEnvironment())) {
+            userInfo = UserInfo.builder().
+                logonUserID("admin").  // 获取当前登录用户ID
+                logonUserName("管理员").  // 获取当前登录用户名字
+                logonAppID("${project_name_var}"). // 获取系统id信息统id信息
+                logonUserOrgID("1").  // 获取当前登录用户所属机构
+                logonIP(getRemoteIp()).  // 获取当前登录用户IP
+                requestURI(getRequest().getRequestURI()).build();  // 获取当前登录用户请求URI
+//		} else {
+//        userInfo = UserInfo.builder().
+//            logonUserID(ssoUserInfo.getSsoUserId()).  // 获取当前登录用户ID
+//            logonUserName(ssoUserInfo.getSsoUserName()).  // 获取当前登录用户名字
+//            logonAppID(ssoUserInfo.getAasClientSubSystem().getAppId()). // 获取系统id信息统id信息
+//            logonUserOrgID(ssoUserInfo.getSsoUserOrgId()).  // 获取当前登录用户所属机构
+//            logonIP(getRemoteIp()).  // 获取当前登录用户IP
+//            requestURI(getRequest().getRequestURI());  // 获取当前登录用户请求URI
+//		}
+		return userInfo;
+	}
+
+    protected String getRemoteIp() {
+        String ipAddress = null;
+        try {
+            ipAddress = this.getRequest().getHeader("x-forwarded-for");
+            if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+                ipAddress = this.getRequest().getHeader("Proxy-Client-IP");
+            }
+            if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+                ipAddress = this.getRequest().getHeader("WL-Proxy-Client-IP");
+            }
+            if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+                ipAddress = this.getRequest().getRemoteAddr();
+                if (ipAddress.equals("127.0.0.1")) {
+                    // 根据网卡取本机配置的IP
+                    InetAddress inet = null;
+                    try {
+                        inet = InetAddress.getLocalHost();
+                    } catch (Exception e) {
+                        
+                    }
+                    ipAddress = inet.getHostAddress();
+                }
+            }
+            // 对于通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割
+            if (ipAddress != null && ipAddress.length() > 15) { // "***.***.***.***".length()
+                if (ipAddress.indexOf(",") > 0) {
+                    ipAddress = ipAddress.substring(0, ipAddress.indexOf(","));
+                }
+            }
+        } catch (Exception e) {
+            ipAddress = null;
+            
+        }
+        return ipAddress;
+    }
+
+    protected BaseResponse buildBadRequestResponse(HttpServletResponse resp, BaseResponse response) {
+        ReturnCode returnCode = ReturnCode.BAD_PARAMETERS;
+        response.setRespCode(new RespCode(returnCode));
+        resp.setStatus(HttpStatus.BAD_REQUEST.value());
+        return response;
+    }
+}

@@ -1,0 +1,33 @@
+package ${company_domain}.${project_basepkg}.entity.base.dto;
+
+import ${company_domain}.${project_basepkg}.entity.base.dto.response.RespCode;
+import lombok.Data;
+import java.io.Serializable;
+
+
+@Data
+public class GeneRespDTO<T> implements Serializable {
+
+    private static final long serialVersionUID = -1;
+
+    private RespCode respCode;
+
+    private T data;
+
+    private Class<T> dataType;
+
+    public GeneRespDTO() {
+        this(null, null, null);
+    }
+
+    public GeneRespDTO(RespCode respCode) {
+        this(respCode, null, null);
+    }
+
+    public GeneRespDTO(RespCode respCode, T data, Class<T> dataType) {
+        this.respCode = respCode;
+        this.data = data;
+        this.dataType = dataType;
+    }
+
+}

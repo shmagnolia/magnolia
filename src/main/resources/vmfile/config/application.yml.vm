@@ -1,0 +1,99 @@
+${project_name_var}:
+  appID: ${project_application_name}
+  environment: local
+#if($generator_project_application_needSSO == "true")
+  appHomeUrl: http://127.0.0.1:8088
+  appSsoUrl: http://127.0.0.1:8088/aas/v1/sso/login
+  aasServerUrl: http://127.0.0.1:8088
+  accessToken: OBgKaPRy9z8YZobiMDnopfIF7hU4stWeZLtAiXD9
+#end
+#set($temp="########业务层配置")
+${temp}
+business:
+#是否打开Header签名检查, 开发环境请用N
+  isAccessRequred: N
+########spring
+spring:
+  thymeleaf:
+    cache: false
+    mode: HTML5
+  http:
+    encoding:
+      charset:  UTF-8
+      enabled:  true
+      force:  true
+#主从数据源配置
+datasource:
+  ${project_name_var}Master:
+    url: jdbc:mysql://${project_db_host}/${project_db_name}?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true
+    username: ${project_db_user}
+    password: ${project_db_pwd}
+    driverClassName: com.mysql.jdbc.Driver
+    validationQuery: SELECT 1
+    timeBetweenEvictionRunsMillis: 3600000
+    minEvictableIdleTimeMillis: 18000000
+    removeAbandoned: true
+    removeAbandonedTimeout: 120
+    logAbandoned: false
+    testWhileIdle: true
+    maxActive: 60
+    maxIdle: 60
+    initialSize: 1
+    maxWait: 10000
+    testOnBorrow: true
+  ${project_name_var}Slave:
+    url: jdbc:mysql://${project_db_host}/${project_db_name}?useUnicode=true&amp;characterEncoding=UTF-8
+    username: ${project_db_user}
+    password:  ${project_db_pwd}
+    driverClassName: com.mysql.jdbc.Driver
+    validationQuery: SELECT 1
+    timeBetweenEvictionRunsMillis: 3600000
+    minEvictableIdleTimeMillis: 18000000
+    removeAbandoned: true
+    removeAbandonedTimeout: 120
+    logAbandoned: false
+    testWhileIdle: true
+    maxActive: 60
+    maxIdle: 60
+    initialSize: 1
+    maxWait: 10000
+    testOnBorrow: true
+    defaultReadOnly: true
+redis:
+  cacheRedis:
+    enabled: false
+    database: ${project_redis_database}
+    maxPoolSize: 20
+    maxTotal: 300
+    maxWaitMillis: 20000
+    minIdle: 10
+    master:
+      ip: ${project_redis_ip}
+      port: ${project_redis_port}
+  persistentRedis:
+    enabled: false
+    database: ${project_redis_database}
+    maxPoolSize: 20
+    maxTotal: 300
+    minIdle: 10
+    maxWaitMillis: 20000
+    master:
+      ip: ${project_redis_ip}
+      port: ${project_redis_port}
+swagger:
+  enabled: true
+  title: ${project_desc}API文档
+logging:
+  path: /tmp
+  level:
+    com.ibatis: DEBUG
+    com.wanda: DEBUG
+#if($generator_project_application_needMQ == "true")
+mq:
+  host: ${mq_host}
+  port: ${mq_port}
+  userName: ${mq_userName}
+  password: ${mq_password}
+  virtual-host: ${mq_virtual-host}
+  timeOut: ${mq_timeOut}
+#end   

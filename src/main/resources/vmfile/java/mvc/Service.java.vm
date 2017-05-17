@@ -1,0 +1,27 @@
+package ${company_domain}.${project_basepkg}.service.${subPkg}.service;
+
+import ${company_domain}.${project_basepkg}.entity.base.dto.GeneRespDTO;
+import ${company_domain}.${project_basepkg}.entity.${subPkg}.dto.${entity}DTO;
+import ${company_domain}.${project_basepkg}.entity.${subPkg}.entity.${entity};
+import java.util.List;
+import java.util.Map;
+
+public interface ${entity}Service {
+
+    //增加
+    public int add${entity}(Map<String, Object> map) throws Exception;
+    //修改
+    public int update${entity}(${entity} ${entityVar}) throws Exception;
+    //批量增加
+    public int batchAdd${entity}(List<${entity}> ${entityVar}List) throws Exception;
+    //批量修改
+    public int batchUpdate${entity}(List<${entity}> ${entityVar}List) throws Exception;
+    //查询entity
+    public ${entity} get${entity}(${primaryKeyJavaType} ${primaryKeyJava}) throws Exception;
+    //查询dto
+    public GeneRespDTO<${entity}DTO> get${entity}DTO(${primaryKeyJavaType} ${primaryKeyJava}) throws Exception;
+    //分页查询
+    public GeneRespDTO<Map<String, Object>> get${entity}DTOPageList(Map<String, Object> map) throws Exception;
+
+
+}

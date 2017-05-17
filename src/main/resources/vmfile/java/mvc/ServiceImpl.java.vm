@@ -1,0 +1,118 @@
+package ${company_domain}.${project_basepkg}.service.${subPkg}.service.impl;
+
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.google.common.base.Preconditions;
+import ${company_domain}.${project_basepkg}.dao.edge.dao.${entity}Mapper;
+import ${company_domain}.${project_basepkg}.entity.base.dto.GeneRespDTO;
+import ${company_domain}.${project_basepkg}.entity.base.dto.ReturnCode;
+import ${company_domain}.${project_basepkg}.entity.base.dto.response.RespCode;
+import ${company_domain}.${project_basepkg}.entity.${subPkg}.dto.${entity}DTO;
+import ${company_domain}.${project_basepkg}.entity.${subPkg}.dto.request.${entity}PageListRequest;
+import ${company_domain}.${project_basepkg}.entity.${subPkg}.entity.${entity};
+import ${company_domain}.${project_basepkg}.entity.op.${subPkg}.dto.request.${entity}Request;
+import ${company_domain}.${project_basepkg}.service.${subPkg}.service.${entity}Service;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Resource;
+
+
+@Service("${entityVar}Service")
+@Slf4j
+public class ${entity}ServiceImpl implements ${entity}Service {
+
+    @Resource
+    private SqlSession sqlSession${project_name}Slave;
+
+    @Autowired
+    private ${entity}Mapper ${entityVar}Mapper;
+
+
+    /**
+     * 增加
+     */
+    @Override
+    public int add${entity}(Map<String, Object> map) throws Exception {
+        ${entity} ${entityVar} = (${entity}) map.get("${entityVar}");
+        return ${entityVar}Mapper.add${entity}(${entityVar});
+    }
+
+    /**
+     * 更新
+     */
+    @Override
+    public int update${entity}(${entity} ${entityVar}) throws Exception {
+        return ${entityVar}Mapper.update${entity}(${entityVar});
+    }
+
+    /**
+     * 批量更新
+     */
+    @Override
+    public int batchUpdate${entity}(List<${entity}> ${entityVar}List) throws Exception{
+        return ${entityVar}Mapper.batchUpdate${entity}(${entityVar}List);
+    }
+
+    /**
+     * 批量增加
+     */
+    @Override
+    public int batchAdd${entity}(List<${entity}> ${entityVar}List) throws Exception{
+        return ${entityVar}Mapper.batchAdd${entity}(${entityVar}List);
+    }
+    
+    /**
+     * 查询entity
+     */
+    @Override
+    public ${entity} get${entity}(${primaryKeyJavaType} ${primaryKeyJava}) throws Exception{
+        return (sqlSession${project_name}Slave.getMapper(${entity}Mapper.class)).get${entity}(${primaryKeyJava});
+    }
+    
+    /**
+     * 明细查询
+     */
+    @Override
+    public GeneRespDTO<${entity}DTO> get${entity}DTO(${primaryKeyJavaType} ${primaryKeyJava}) throws Exception {
+        ${entity}DTO ${entityVar}DTO = (sqlSession${project_name}Slave.getMapper(${entity}Mapper.class)).get${entity}DTO(${primaryKeyJava});
+        RespCode respCode = new RespCode(ReturnCode.SUCCESS);
+        GeneRespDTO<${entity}DTO> respDTO = new GeneRespDTO<${entity}DTO>(respCode, ${entityVar}DTO, ${entity}DTO.class);
+        return respDTO;
+    }
+    
+    /**
+     * 分页查询
+     */
+    @Override
+    public GeneRespDTO<Map<String, Object>> get${entity}DTOPageList(Map<String, Object> map) throws Exception {
+        if(map.get("pageNum") == null || map.get("pageSize") == null){
+            throw new IllegalStateException("pageNum和pageSize必须都不为空");
+        }
+        ${entity}PageListRequest request = (${entity}PageListRequest)map.get("request");
+        check${entity}PageListRequest(request);
+        Page<${entity}DTO> page = PageHelper.startPage(Integer.parseInt(map.get("pageNum").toString()), Integer.parseInt(map.get("pageSize").toString()),true,false);
+        List<${entity}DTO> ${entityVar}DTOList = (sqlSession${project_name}Slave.getMapper(${entity}Mapper.class)).get${entity}DTOPageList(request,page);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("${entityVar}DTOList", ${entityVar}DTOList);
+        resultMap.put("page", page);
+        RespCode respCode = new RespCode(ReturnCode.SUCCESS);
+        GeneRespDTO<Map<String, Object>> respDTO = new GeneRespDTO(respCode, resultMap, Map.class);
+        return respDTO;
+    }
+    private void check${entity}PageListRequest(${entity}PageListRequest request) throws IllegalArgumentException{
+        Preconditions.checkArgument(request != null,"${tableRemarks}查询请求信息为空");
+
+    }
+
+
+
+
+
+}

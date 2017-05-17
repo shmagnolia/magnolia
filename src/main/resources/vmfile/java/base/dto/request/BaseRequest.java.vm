@@ -1,0 +1,22 @@
+package ${company_domain}.${project_basepkg}.entity.base.dto.request;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+@JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY, getterVisibility=JsonAutoDetect.Visibility.NONE)
+@Data
+public class BaseRequest {
+
+	private static final long serialVersionUID = 1L;
+
+    @ApiModelProperty("userId")
+    private String userId;
+
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+}

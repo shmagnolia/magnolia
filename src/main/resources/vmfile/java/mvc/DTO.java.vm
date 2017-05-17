@@ -1,0 +1,15 @@
+package ${company_domain}.${project_basepkg}.entity.${subPkg}.dto;
+
+import ${company_domain}.${project_basepkg}.entity.base.dto.BaseDTO;
+import ${company_domain}.${project_basepkg}.entity.${subPkg}.entity.${entity};
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+@Data
+@ApiModel("${tableRemarks}")
+public class ${entity}DTO extends ${entity} implements BaseDTO {
+    
+    ${dtoBody}
+  
+}

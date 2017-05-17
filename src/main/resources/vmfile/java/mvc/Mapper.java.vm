@@ -1,0 +1,32 @@
+package ${company_domain}.${project_basepkg}.dao.${subPkg}.dao;
+
+import com.github.pagehelper.Page;
+import ${company_domain}.${project_basepkg}.entity.${subPkg}.dto.${entity}DTO;
+import ${company_domain}.${project_basepkg}.entity.${subPkg}.dto.request.${entity}PageListRequest;
+import ${company_domain}.${project_basepkg}.entity.${subPkg}.entity.${entity};
+import org.apache.ibatis.annotations.Param;
+import java.math.BigInteger;
+import java.util.Date;
+import java.util.List;
+import tk.mybatis.mapper.common.Mapper;
+import tk.mybatis.mapper.common.MySqlMapper;
+
+
+public interface ${entity}Mapper extends Mapper<${entity}>, MySqlMapper<${entity}> {
+
+    int add${entity}(${entity} ${entityVar});
+
+    int batchAdd${entity}(List<${entity}> ${entityVar}List);
+
+    int update${entity}(${entity} ${entityVar});
+
+    int batchUpdate${entity}(List<${entity}> ${entityVar}List);
+
+    ${entity} get${entity}(@Param("${primaryKeyJava}")${primaryKeyJavaType} ${primaryKeyJava});
+
+    ${entity}DTO get${entity}DTO(@Param("${primaryKeyJava}")${primaryKeyJavaType} ${primaryKeyJava});
+
+    List<${entity}DTO> get${entity}DTOPageList(@Param("request")${entity}PageListRequest request,Page<?> page);
+
+
+}

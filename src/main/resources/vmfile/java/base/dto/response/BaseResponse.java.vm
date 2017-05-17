@@ -1,0 +1,21 @@
+package ${company_domain}.${project_basepkg}.entity.base.dto.response;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.io.Serializable;
+
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_EMPTY)
+public class BaseResponse implements Serializable {
+
+    private static final long serialVersionUID = -3518052268701541168L;
+
+    private RespCode respCode;
+
+}
